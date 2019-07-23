@@ -176,7 +176,7 @@ if __name__ == "__main__":
             blobs = generate_blobs(nside, nexp=nexp)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
-                      fileroot=os.path.join(outDir, 'baseline_%iexp_pairsame_' % nexp), extra_info=extra_info,
+                      fileroot=os.path.join(outDir, fileroot+'%iexp_pairsame_' % nexp), extra_info=extra_info,
                       nside=nside)
     else:
         greedy = gen_greedy_surveys(nside, nexp=nexp)
@@ -184,5 +184,5 @@ if __name__ == "__main__":
         blobs = generate_blobs(nside, nexp=nexp, no_pairs=True)
         surveys = [ddfs, blobs, greedy]
         run_sched(surveys, survey_length=survey_length, verbose=verbose,
-                  fileroot=os.path.join(outDir, 'baseline_%iexp_nopairs_' % nexp), extra_info=extra_info,
+                  fileroot=os.path.join(outDir, fileroot+'%iexp_nopairs_' % nexp), extra_info=extra_info,
                   nside=nside)

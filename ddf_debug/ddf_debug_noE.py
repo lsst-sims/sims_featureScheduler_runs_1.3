@@ -74,9 +74,9 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None):
     survey_name = 'DD:u,ELAISS1'
     bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
 
-    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
-                                        nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
-                                        nexp=nexp, detailers=detailers))
+    #surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
+    #                                    nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
+    #                                    nexp=nexp, detailers=detailers))
 
     # XMM-LSS
     survey_name = 'DD:XMM-LSS'
@@ -288,7 +288,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'ddfdebug_'
+    fileroot = 'ddfdebug_noE_'
 
     if nexp > 1:
         fileroot += '%iexp' % nexp
