@@ -5,13 +5,146 @@ from lsst.sims.featureScheduler.modelObservatory import Model_observatory
 from lsst.sims.featureScheduler.schedulers import Core_scheduler
 from lsst.sims.featureScheduler.utils import standard_goals, calc_norm_factor
 import lsst.sims.featureScheduler.basis_functions as bf
-from lsst.sims.featureScheduler.surveys import (generate_dd_surveys, Greedy_survey,
-                                                Blob_survey)
+from lsst.sims.featureScheduler.surveys import (Greedy_survey, Blob_survey)
 from lsst.sims.featureScheduler import sim_runner
 import sys
 import subprocess
 import os
 import argparse
+import lsst.sims.featureScheduler.basis_functions as basis_functions
+from lsst.sims.featureScheduler.surveys import Deep_drilling_survey
+
+
+# I should maybe say, if I'm more than 4 sequences below the fractional limit, lift the force delay.
+# Basically combine the fraction_of_obs and Fore delay into a single basis function. let's start by testing 
+# If just going to 1-day delay helps
+
+
+def dd_bfs(RA, dec, survey_name, ha_limits, frac_total=0.0185):
+    """
+    Convienence function to generate all the feasibility basis functions
+    """
+    bfs = []
+    bfs.append(basis_functions.Filter_loaded_basis_function(filternames=['r', 'g', 'i', 'z', 'y']))
+    bfs.append(basis_functions.Not_twilight_basis_function(sun_alt_limit=-18))
+    bfs.append(basis_functions.Time_to_twilight_basis_function(time_needed=62.))
+    bfs.append(basis_functions.Force_delay_basis_function(days_delay=1., survey_name=survey_name))
+    bfs.append(basis_functions.Hour_Angle_limit_basis_function(RA=RA, ha_limits=ha_limits))
+    bfs.append(basis_functions.Fraction_of_obs_basis_function(frac_total=frac_total, survey_name=survey_name))
+
+    return bfs
+
+
+def dd_u_bfs(RA, dec, survey_name, ha_limits, frac_total=0.0015):
+    """Convienence function to generate all the feasibility basis functions for u-band DDFs
+    """
+    bfs = []
+    bfs.append(basis_functions.Filter_loaded_basis_function(filternames='u'))
+    bfs.append(basis_functions.Not_twilight_basis_function(sun_alt_limit=-18))
+    bfs.append(basis_functions.Time_to_twilight_basis_function(time_needed=6.))
+    bfs.append(basis_functions.Hour_Angle_limit_basis_function(RA=RA, ha_limits=ha_limits))
+
+    bfs.append(basis_functions.Force_delay_basis_function(days_delay=1., survey_name=survey_name))
+    bfs.append(basis_functions.Moon_down_basis_function())
+    bfs.append(basis_functions.Fraction_of_obs_basis_function(frac_total=frac_total, survey_name=survey_name))
+
+    return bfs
+
+
+def generate_dd_surveys(nside=None, nexp=2, detailers=None):
+    """Utility to return a list of standard deep drilling field surveys.
+
+    XXX-Someone double check that I got the coordinates right!
+
+    """
+
+    surveys = []
+
+    # ELAIS S1
+    RA = 9.45
+    dec = -44.
+    survey_name = 'DD:ELAISS1'
+    ha_limits = ([0., 1.18], [21.82, 24.])
+    bfs = dd_bfs(RA, dec, survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
+                                        nvis=[20, 10, 20, 26, 20],
+                                        survey_name=survey_name, reward_value=100,
+                                        nside=nside, nexp=nexp, detailers=detailers))
+
+    survey_name = 'DD:u,ELAISS1'
+    bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
+
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
+                                        nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+
+    # XMM-LSS
+    survey_name = 'DD:XMM-LSS'
+    RA = 35.708333
+    dec = -4-45/60.
+    ha_limits = ([0., 1.3], [21.7, 24.])
+    bfs = dd_bfs(RA, dec, survey_name, ha_limits)
+
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
+                                        nvis=[20, 10, 20, 26, 20], survey_name=survey_name, reward_value=100,
+                                        nside=nside, nexp=nexp, detailers=detailers))
+    survey_name = 'DD:u,XMM-LSS'
+    bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
+
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
+                                        nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+
+    # Extended Chandra Deep Field South
+    RA = 53.125
+    dec = -28.-6/60.
+    survey_name = 'DD:ECDFS'
+    ha_limits = [[0.5, 3.0], [20., 22.5]]
+    bfs = dd_bfs(RA, dec, survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
+                                        nvis=[20, 10, 20, 26, 20],
+                                        survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+
+    survey_name = 'DD:u,ECDFS'
+    bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
+                                        nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+    # COSMOS
+    RA = 150.1
+    dec = 2.+10./60.+55/3600.
+    survey_name = 'DD:COSMOS'
+    ha_limits = ([0., 1.5], [21.5, 24.])
+    bfs = dd_bfs(RA, dec, survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
+                                        nvis=[20, 10, 20, 26, 20],
+                                        survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+    survey_name = 'DD:u,COSMOS'
+    bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
+                                        nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+
+    # Extra DD Field, just to get to 5. Still not closed on this one
+    survey_name = 'DD:290'
+    RA = 349.386443
+    dec = -63.321004
+    ha_limits = ([0., 0.5], [23.5, 24.])
+    bfs = dd_bfs(RA, dec, survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
+                                        nvis=[20, 10, 20, 26, 20],
+                                        survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+
+    survey_name = 'DD:u,290'
+    bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u', nvis=[7],
+                                        survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
+
+    return surveys
 
 
 def gen_greedy_surveys(nside, nexp=1):
@@ -155,34 +288,14 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'baseline_'
+    fileroot = 'ddfdebug_'
 
-    if Pairs:
-        if mixedPairs:
-            # mixed pairs.
-            if nexp > 1:
-                fileroot += '%iexp' % nexp
-            greedy = gen_greedy_surveys(nside, nexp=nexp)
-            ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-            blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True)
-            surveys = [ddfs, blobs, greedy]
-            run_sched(surveys, survey_length=survey_length, verbose=verbose,
-                      fileroot=os.path.join(outDir, fileroot), extra_info=extra_info,
-                      nside=nside)
-        else:
-            # Same filter for pairs
-            greedy = gen_greedy_surveys(nside, nexp=nexp)
-            ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-            blobs = generate_blobs(nside, nexp=nexp)
-            surveys = [ddfs, blobs, greedy]
-            run_sched(surveys, survey_length=survey_length, verbose=verbose,
-                      fileroot=os.path.join(outDir, 'baseline_%iexp_pairsame_' % nexp), extra_info=extra_info,
-                      nside=nside)
-    else:
-        greedy = gen_greedy_surveys(nside, nexp=nexp)
-        ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-        blobs = generate_blobs(nside, nexp=nexp, no_pairs=True)
-        surveys = [ddfs, blobs, greedy]
-        run_sched(surveys, survey_length=survey_length, verbose=verbose,
-                  fileroot=os.path.join(outDir, 'baseline_%iexp_nopairs_' % nexp), extra_info=extra_info,
-                  nside=nside)
+    if nexp > 1:
+        fileroot += '%iexp' % nexp
+    greedy = gen_greedy_surveys(nside, nexp=nexp)
+    ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
+    blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True)
+    surveys = [ddfs, blobs, greedy]
+    run_sched(surveys, survey_length=survey_length, verbose=verbose,
+              fileroot=os.path.join(outDir, fileroot), extra_info=extra_info,
+
