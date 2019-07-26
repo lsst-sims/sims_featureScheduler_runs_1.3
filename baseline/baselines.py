@@ -3,7 +3,7 @@ import matplotlib.pylab as plt
 import healpy as hp
 from lsst.sims.featureScheduler.modelObservatory import Model_observatory
 from lsst.sims.featureScheduler.schedulers import Core_scheduler
-from lsst.sims.featureScheduler.utils import standard_goals, calc_norm_factor
+from lsst.sims.featureScheduler.utils import standard_goals, calc_norm_factor, create_season_offset
 import lsst.sims.featureScheduler.basis_functions as bf
 from lsst.sims.featureScheduler.surveys import (generate_dd_surveys, Greedy_survey,
                                                 Blob_survey)
@@ -46,7 +46,7 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False):
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
 
@@ -75,11 +75,17 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False):
                                                 target_map=target_map[filtername],
                                                 out_of_bounds_val=np.nan, nside=nside,
                                                 norm_factor=norm_factor))
+        bfs.append(bf.Season_coverage_basis_function(filtername=filtername, nside=nside,
+                                                     footprint=target_map[filtername], offset=offset))
+
         if filtername2 is not None:
             bfs.append(bf.Target_map_basis_function(filtername=filtername2,
                                                     target_map=target_map[filtername2],
                                                     out_of_bounds_val=np.nan, nside=nside,
                                                     norm_factor=norm_factor))
+            bfs.append(bf.Season_coverage_basis_function(filtername=filtername2, nside=nside,
+                                                         footprint=target_map[filtername2], offset=offset))
+
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
         # Masks, give these 0 weight
@@ -93,10 +99,10 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False):
             time_needed = times_needed[1]
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
-        weights = np.array([3.0, 3.0, .3, .3, 3., 3., 0., 0., 0., 0., 0.])
+        weights = np.array([3.0, 3.0, .3, .3, 3., 3., 3., 3., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([6.0, 0.6, 3., 3., 0., 0., 0., 0., 0.])
+            weights = np.array([6.0, 0.6, 3., 3., 3., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
@@ -157,6 +163,13 @@ if __name__ == "__main__":
 
     fileroot = 'baseline_'
 
+    observatory = Model_observatory(nside=nside)
+    conditions = observatory.return_conditions()
+
+    # Mark position of the sun at the start of the survey.
+    sun_ra_0 = conditions.sunRA  # radians
+    offset = create_season_offset(nside, sun_ra_0) + 365.25
+
     if Pairs:
         if mixedPairs:
             # mixed pairs.
@@ -164,7 +177,7 @@ if __name__ == "__main__":
                 fileroot += '%iexp' % nexp
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-            blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True)
+            blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot), extra_info=extra_info,
@@ -173,7 +186,7 @@ if __name__ == "__main__":
             # Same filter for pairs
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-            blobs = generate_blobs(nside, nexp=nexp)
+            blobs = generate_blobs(nside, nexp=nexp, offset=offset)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+'%iexp_pairsame_' % nexp), extra_info=extra_info,
@@ -181,7 +194,7 @@ if __name__ == "__main__":
     else:
         greedy = gen_greedy_surveys(nside, nexp=nexp)
         ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-        blobs = generate_blobs(nside, nexp=nexp, no_pairs=True)
+        blobs = generate_blobs(nside, nexp=nexp, no_pairs=True, offset=offset)
         surveys = [ddfs, blobs, greedy]
         run_sched(surveys, survey_length=survey_length, verbose=verbose,
                   fileroot=os.path.join(outDir, fileroot+'%iexp_nopairs_' % nexp), extra_info=extra_info,

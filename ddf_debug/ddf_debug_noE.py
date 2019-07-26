@@ -66,17 +66,17 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None):
     survey_name = 'DD:ELAISS1'
     ha_limits = ([0., 1.18], [21.82, 24.])
     bfs = dd_bfs(RA, dec, survey_name, ha_limits)
-    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
-                                        nvis=[20, 10, 20, 26, 20],
-                                        survey_name=survey_name, reward_value=100,
-                                        nside=nside, nexp=nexp, detailers=detailers))
+    #surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
+    #                                    nvis=[20, 10, 20, 26, 20],
+    #                                    survey_name=survey_name, reward_value=100,
+    #                                   nside=nside, nexp=nexp, detailers=detailers))
 
     survey_name = 'DD:u,ELAISS1'
     bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
 
-    #surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
-    #                                    nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
-    #                                    nexp=nexp, detailers=detailers))
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u',
+                                        nvis=[7], survey_name=survey_name, reward_value=100, nside=nside,
+                                        nexp=nexp, detailers=detailers))
 
     # XMM-LSS
     survey_name = 'DD:XMM-LSS'
