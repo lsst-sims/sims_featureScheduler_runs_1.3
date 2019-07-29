@@ -75,16 +75,16 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
                                                 target_map=target_map[filtername],
                                                 out_of_bounds_val=np.nan, nside=nside,
                                                 norm_factor=norm_factor))
-        bfs.append(bf.Season_coverage_basis_function(filtername=filtername, nside=nside,
-                                                     footprint=target_map[filtername], offset=offset))
+        bfs.append(bf. N_obs_per_year_basis_function(filtername=filtername, nside=nside,
+                                                     footprint=target_map[filtername]))
 
         if filtername2 is not None:
             bfs.append(bf.Target_map_basis_function(filtername=filtername2,
                                                     target_map=target_map[filtername2],
                                                     out_of_bounds_val=np.nan, nside=nside,
                                                     norm_factor=norm_factor))
-            bfs.append(bf.Season_coverage_basis_function(filtername=filtername2, nside=nside,
-                                                         footprint=target_map[filtername2], offset=offset))
+            bfs.append(bf. N_obs_per_year_basis_function(filtername=filtername2, nside=nside,
+                                                         footprint=target_map[filtername2]))
 
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
