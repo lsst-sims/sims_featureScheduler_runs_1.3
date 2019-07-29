@@ -75,12 +75,16 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
                                                 target_map=target_map[filtername],
                                                 out_of_bounds_val=np.nan, nside=nside,
                                                 norm_factor=norm_factor))
+        bfs.append(bf.Season_coverage_basis_function(filtername=filtername, nside=nside,
+                                                     footprint=target_map[filtername], offset=offset))
 
         if filtername2 is not None:
             bfs.append(bf.Target_map_basis_function(filtername=filtername2,
                                                     target_map=target_map[filtername2],
                                                     out_of_bounds_val=np.nan, nside=nside,
                                                     norm_factor=norm_factor))
+            bfs.append(bf.Season_coverage_basis_function(filtername=filtername2, nside=nside,
+                                                         footprint=target_map[filtername2], offset=offset))
 
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
@@ -95,10 +99,10 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
             time_needed = times_needed[1]
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
-        weights = np.array([3.0, 3.0, .3, .3, 3., 3., 0., 0., 0., 0., 0.])
+        weights = np.array([3.0, 3.0, .3, .3, 3., 3., 3., 3., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([6.0, 0.6, 3., 3., 0., 0., 0., 0., 0.])
+            weights = np.array([6.0, 0.6, 3., 3., 3., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
@@ -157,7 +161,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'baseline_'
+    fileroot = 'templates_'
 
     observatory = Model_observatory(nside=nside)
     conditions = observatory.return_conditions()
