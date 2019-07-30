@@ -46,7 +46,7 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None):
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, template_weight=3.):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
 
@@ -75,19 +75,23 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
                                                 target_map=target_map[filtername],
                                                 out_of_bounds_val=np.nan, nside=nside,
                                                 norm_factor=norm_factor))
-        bfs.append(bf. N_obs_per_year_basis_function(filtername=filtername, nside=nside,
-                                                     footprint=target_map[filtername]))
 
         if filtername2 is not None:
             bfs.append(bf.Target_map_basis_function(filtername=filtername2,
                                                     target_map=target_map[filtername2],
                                                     out_of_bounds_val=np.nan, nside=nside,
                                                     norm_factor=norm_factor))
-            bfs.append(bf. N_obs_per_year_basis_function(filtername=filtername2, nside=nside,
-                                                         footprint=target_map[filtername2]))
 
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
+
+        bfs.append(bf.N_obs_per_year_basis_function(filtername=filtername, nside=nside,
+                                                    footprint=target_map[filtername],
+                                                    HA_limit=1., n_obs=3, season=250.))
+        if filtername2 is not None:
+            bfs.append(bf.N_obs_per_year_basis_function(filtername=filtername2, nside=nside,
+                                                        footprint=target_map[filtername2],
+                                                        HA_limit=1., n_obs=3, season=250.))
         # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
@@ -99,10 +103,10 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
             time_needed = times_needed[1]
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
-        weights = np.array([3.0, 3.0, .3, .3, 3., 3., 3., 3., 0., 0., 0., 0., 0.])
+        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 0., 0., 0., 0., 0.])
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([6.0, 0.6, 3., 3., 3., 0., 0., 0., 0., 0.])
+            weights = np.array([6.0, 0.6, 3., 3., template_weight, 0., 0., 0., 0., 0.])
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
@@ -142,6 +146,7 @@ if __name__ == "__main__":
     parser.set_defaults(verbose=False)
     parser.add_argument("--survey_length", type=float, default=365.25*10)
     parser.add_argument("--outDir", type=str, default="")
+    parser.add_argument("--template_weight", type=float, default=3.)
 
     args = parser.parse_args()
     nexp = args.nexp
@@ -150,6 +155,7 @@ if __name__ == "__main__":
     survey_length = args.survey_length  # Days
     outDir = args.outDir
     verbose = args.verbose
+    template_weight = args.template_weight
 
     nside = 32
 
@@ -161,14 +167,14 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'templates_'
+    fileroot = 'templates_w%.1f_' % template_weight
 
-    observatory = Model_observatory(nside=nside)
-    conditions = observatory.return_conditions()
+    #observatory = Model_observatory(nside=nside)
+    #conditions = observatory.return_conditions()
 
     # Mark position of the sun at the start of the survey.
-    sun_ra_0 = conditions.sunRA  # radians
-    offset = create_season_offset(nside, sun_ra_0) + 365.25
+    #sun_ra_0 = conditions.sunRA  # radians
+    #offset = create_season_offset(nside, sun_ra_0) + 365.25
 
     if Pairs:
         if mixedPairs:
@@ -177,7 +183,7 @@ if __name__ == "__main__":
                 fileroot += '%iexp' % nexp
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-            blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
+            blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, template_weight=template_weight)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot), extra_info=extra_info,
@@ -186,7 +192,7 @@ if __name__ == "__main__":
             # Same filter for pairs
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-            blobs = generate_blobs(nside, nexp=nexp, offset=offset)
+            blobs = generate_blobs(nside, nexp=nexp, template_weight=template_weight)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+'%iexp_pairsame_' % nexp), extra_info=extra_info,
@@ -194,7 +200,7 @@ if __name__ == "__main__":
     else:
         greedy = gen_greedy_surveys(nside, nexp=nexp)
         ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-        blobs = generate_blobs(nside, nexp=nexp, no_pairs=True, offset=offset)
+        blobs = generate_blobs(nside, nexp=nexp, no_pairs=True, template_weight=template_weight)
         surveys = [ddfs, blobs, greedy]
         run_sched(surveys, survey_length=survey_length, verbose=verbose,
                   fileroot=os.path.join(outDir, fileroot+'%iexp_nopairs_' % nexp), extra_info=extra_info,
