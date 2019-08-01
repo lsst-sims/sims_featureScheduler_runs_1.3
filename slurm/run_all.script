@@ -1,3 +1,8 @@
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines/baselines.py --nexp 1 --noPairs --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines/baselines.py --nexp 1 --mixedPairs --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines/baselines.py --nexp 1  --nomixedPairs --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines/baselines.py --nexp 2  --mixedPairs --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines/baselines.py --nexp 2 --nomixedPairs --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baselines
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates/templates.py --template_weight 0.1 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates/templates.py --template_weight 0.5 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates/templates.py --template_weight 1.0 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates
