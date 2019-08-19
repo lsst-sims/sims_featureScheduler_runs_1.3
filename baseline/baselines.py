@@ -187,8 +187,6 @@ if __name__ == "__main__":
     details = [detailers.Camera_rot_detailer(min_rot=-90., max_rot=90.), dither_detailer]
     ddfs = generate_dd_surveys(nside=nside, nexp=nexp, detailers=details)
 
-    ddfs = generate_dd_surveys(nside=nside, nexp=nexp)
-
     if Pairs:
         if mixedPairs:
             greedy = gen_greedy_surveys(nside, nexp=nexp)
