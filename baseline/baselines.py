@@ -25,7 +25,7 @@ def gen_greedy_surveys(nside, nexp=1):
     filters = ['r', 'i', 'z', 'y']
     surveys = []
 
-    detailer = detailers.Camera_rot_detailer(min_rot=-90., max_rot=90.)
+    detailer = detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.)
 
     for filtername in filters:
         bfs = []
@@ -41,8 +41,9 @@ def gen_greedy_surveys(nside, nexp=1):
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=40.))
 
         bfs.append(bf.Filter_loaded_basis_function(filternames=filtername))
+        bfs.append(bf.Planet_mask_basis_function(nside=nside))
 
-        weights = np.array([3.0, 0.3, 3., 3., 0., 0., 0.])
+        weights = np.array([3.0, 0.3, 3., 3., 0., 0., 0., 0.])
         surveys.append(Greedy_survey(bfs, weights, block_size=1, filtername=filtername,
                                      dither=True, nside=nside, ignore_obs='DD', nexp=nexp,
                                      detailers=[detailer]))
@@ -50,7 +51,7 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=15.):
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=5.):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
 
@@ -70,7 +71,7 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
     # Ideal time between taking pairs
     pair_time = 22.
     times_needed = [pair_time, pair_time*2]
-    detailer = detailers.Camera_rot_detailer(min_rot=-90., max_rot=90.)
+    detailer = detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.)
     for filtername, filtername2 in zip(filter1s, filter2s):
         bfs = []
         bfs.append(bf.M5_diff_basis_function(filtername=filtername, nside=nside))
@@ -107,10 +108,11 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
             time_needed = times_needed[1]
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
-        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 0., 0., 0., 0., 0.])
+        bfs.append(bf.Planet_mask_basis_function(nside=nside))
+        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([6.0, 0.6, 3., 3., template_weight*2, 0., 0., 0., 0., 0.])
+            weights = np.array([6.0, 0.6, 3., 3., template_weight*2, 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
@@ -179,12 +181,12 @@ if __name__ == "__main__":
     observatory = Model_observatory(nside=nside)
     conditions = observatory.return_conditions()
 
-    # Mark position of the sun at the start of the survey.
+    # Mark position of the sun at the start of the survey. Usefull for rolling cadence.
     sun_ra_0 = conditions.sunRA  # radians
     offset = create_season_offset(nside, sun_ra_0) + 365.25
     # Set up the DDF surveys to dither
     dither_detailer = detailers.Dither_detailer(per_night=per_night, max_dither=max_dither)
-    details = [detailers.Camera_rot_detailer(min_rot=-90., max_rot=90.), dither_detailer]
+    details = [detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.), dither_detailer]
     ddfs = generate_dd_surveys(nside=nside, nexp=nexp, detailers=details)
 
     if Pairs:
