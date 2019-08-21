@@ -6,7 +6,7 @@ from lsst.sims.featureScheduler.schedulers import Core_scheduler, simple_filter_
 from lsst.sims.featureScheduler.utils import standard_goals, calc_norm_factor, create_season_offset
 import lsst.sims.featureScheduler.basis_functions as bf
 from lsst.sims.featureScheduler.surveys import (generate_dd_surveys, Greedy_survey,
-                                                Blob_survey)
+                                                Blob_survey,  generate_desc_dd_surveys)
 from lsst.sims.featureScheduler import sim_runner
 import lsst.sims.featureScheduler.detailers as detailers
 import sys
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'filterload_'+'illum%i_' % illum_limit
+    fileroot = 'descddf_'+'illum%i_' % illum_limit
     file_end = 'v1.3_'
 
     observatory = Model_observatory(nside=nside)
@@ -191,7 +191,13 @@ if __name__ == "__main__":
     # Set up the DDF surveys to dither
     dither_detailer = detailers.Dither_detailer(per_night=per_night, max_dither=max_dither)
     details = [detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.), dither_detailer]
-    ddfs = generate_dd_surveys(nside=nside, nexp=nexp, detailers=details)
+    old_ddfs = generate_dd_surveys(nside=nside, nexp=nexp, detailers=details)
+    desc_ddfs = generate_desc_dd_surveys(nside=nside, nexp=nexp, detailers=details)
+    # take the old u-band ddfs and use those
+    for survey in old_ddfs:
+        if 'DD:u' in survey.survey_name:
+            desc_ddfs.append(survey)
+    ddfs = desc_ddfs
 
     if Pairs:
         if mixedPairs:

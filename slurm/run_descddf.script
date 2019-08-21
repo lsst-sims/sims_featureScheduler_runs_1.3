@@ -1,0 +1,8 @@
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 60  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 30  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 15  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 10  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 7  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 5  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 4  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 3  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
