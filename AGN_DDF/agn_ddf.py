@@ -34,7 +34,7 @@ def dd_bfs(RA, dec, survey_name, ha_limits, frac_total=0.007, aggressive_frac=0.
                                                              sun_alt_limit=sun_alt_limit, time_needed=time_needed,
                                                              RA=RA, survey_name=survey_name,
                                                              ha_limits=ha_limits))
-    bfs.append(basis_functions.Soft_delay_basis_function(fractions=fractions, delays=[0., 0.5, 1.5],
+    bfs.append(basis_functions.Soft_delay_basis_function(fractions=fractions, delays=[0., 0.04, 1.5],
                                                          survey_name=survey_name))
 
     return bfs
@@ -159,9 +159,6 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None):
     return surveys
 
 
-
-
-
 def gen_greedy_surveys(nside, nexp=1):
     """
     Make a quick set of greedy surveys
@@ -198,7 +195,7 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=5.):
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=0.):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
 
@@ -326,7 +323,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'descddf_'+'illum%i_' % illum_limit
+    fileroot = 'agnddf_'+'illum%i_' % illum_limit
     file_end = 'v1.3_'
 
     observatory = Model_observatory(nside=nside)

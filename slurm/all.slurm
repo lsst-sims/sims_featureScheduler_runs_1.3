@@ -32,7 +32,7 @@
 
 ## Specify the working directory for this job
 
-#SBATCH --workdir=/gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/slurm
+#SBATCH --chdir=/gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/slurm
 
 ##turn on e-mail notification
 

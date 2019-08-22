@@ -51,7 +51,7 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=5.):
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=0.):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
 
