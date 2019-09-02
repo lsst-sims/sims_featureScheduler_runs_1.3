@@ -55,7 +55,7 @@ def gen_greedy_surveys(nside, nexp=1, target_maps=None, mod_year=None, day_offse
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=0.,
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6.,
                    target_maps=None, norm_factor=None, mod_year=2, max_season=10, day_offset=None):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'delayedrolling_mod%i_sdf_%.2f_' % (mod_year, scale_down_factor)
+    fileroot = 'simplerolling_mod%i_sdf_%.2f_' % (mod_year, scale_down_factor)
     file_end = 'v1.3_'
 
     observatory = Model_observatory(nside=nside)
@@ -230,8 +230,7 @@ if __name__ == "__main__":
 
     # Mark position of the sun at the start of the survey. Usefull for rolling cadence.
     sun_ra_0 = conditions.sunRA  # radians
-    offset = create_season_offset(nside, sun_ra_0)
-    max_season = 6
+    offset = create_season_offset(nside, sun_ra_0) + 365.25
     # Set up the DDF surveys to dither
     dither_detailer = detailers.Dither_detailer(per_night=per_night, max_dither=max_dither)
     details = [detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.), dither_detailer]
@@ -244,10 +243,10 @@ if __name__ == "__main__":
 
     if Pairs:
         if mixedPairs:
-            greedy = gen_greedy_surveys(nside, nexp=nexp, target_maps=target_maps, mod_year=mod_year, day_offset=offset,
-                                        norm_factor=norm_factor, max_season=max_season)
+            greedy = gen_greedy_surveys(nside, nexp=nexp, target_maps=target_maps, mod_year=mod_year, day_offset=None,
+                                        norm_factor=norm_factor, max_season=None)
             blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset, target_maps=target_maps,
-                                   norm_factor=norm_factor, mod_year=mod_year, max_season=max_season, day_offset=offset)
+                                   norm_factor=norm_factor, mod_year=mod_year, max_season=None, day_offset=None)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
