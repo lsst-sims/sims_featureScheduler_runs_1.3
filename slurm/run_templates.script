@@ -1,3 +1,4 @@
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates/templates.py --template_weight 0. --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates/templates.py --template_weight 0.1 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates/templates.py --template_weight 0.5 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates/templates.py --template_weight 1.0 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/templates
