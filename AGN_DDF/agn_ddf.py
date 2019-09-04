@@ -195,7 +195,7 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=0.):
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6.):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
 
@@ -215,8 +215,10 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
     # Ideal time between taking pairs
     pair_time = 22.
     times_needed = [pair_time, pair_time*2]
-    detailer = detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.)
     for filtername, filtername2 in zip(filter1s, filter2s):
+        detailer_list = []
+        detailer_list.append(detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.))
+        detailer_list.append(detailers.Close_alt_detailer())
         bfs = []
         bfs.append(bf.M5_diff_basis_function(filtername=filtername, nside=nside))
         if filtername2 is not None:
@@ -261,10 +263,12 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
             survey_name = 'blob, %s' % filtername
         else:
             survey_name = 'blob, %s%s' % (filtername, filtername2)
+        if filtername2 is not None:
+            detailer_list.append(detailers.Take_as_pairs_detailer(filtername=filtername2))
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=filtername2,
                                    ideal_pair_time=pair_time, nside=nside,
                                    survey_note=survey_name, ignore_obs='DD', dither=True,
-                                   nexp=nexp, detailers=[detailer]))
+                                   nexp=nexp, detailers=detailer_list))
 
     return surveys
 
