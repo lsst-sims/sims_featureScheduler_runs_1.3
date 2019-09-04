@@ -7,7 +7,4 @@ New things in v1.3 compared to the v1.2 baseline
 * Spatial dithering (0.7 degrees) and rotational dithering included for DDFs
 * New explicit planet masking basis function
 * New detailer to help further minimize slewtimes between observations
-
-TODO:
-* select a new u-band loading schedule
-* Set the new template basis function weight
+* Decrease the number of nights the u-band is loaded per lunation
