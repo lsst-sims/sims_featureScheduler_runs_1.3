@@ -8,3 +8,5 @@ New things in v1.3 compared to the v1.2 baseline
 * New explicit planet masking basis function
 * New detailer to help further minimize slewtimes between observations
 * Decrease the number of nights the u-band is loaded per lunation
+
+The limited u-band availability does mean there are a few years where the entire sky does not get observed in u.
