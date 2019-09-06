@@ -22,6 +22,7 @@ def gen_greedy_surveys(nside, nexp=1, target_maps=None, mod_year=None, day_offse
     """
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
+    wfd_halves = wfd_half()
     # Let's remove the bluer filters since this should only be near twilight
     filters = ['r', 'i', 'z', 'y']
     surveys = []
@@ -40,6 +41,7 @@ def gen_greedy_surveys(nside, nexp=1, target_maps=None, mod_year=None, day_offse
                                                        max_season=max_season))
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
+        bfs.append(bf.Map_modulo_basis_function(wfd_halves))
         # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=40.))
@@ -47,7 +49,7 @@ def gen_greedy_surveys(nside, nexp=1, target_maps=None, mod_year=None, day_offse
         bfs.append(bf.Filter_loaded_basis_function(filternames=filtername))
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
 
-        weights = np.array([3.0, 0.3, 3., 3., 0., 0., 0., 0.])
+        weights = np.array([3.0, 0.3, 3., 3., 3., 0., 0., 0., 0.])
         surveys.append(Greedy_survey(bfs, weights, block_size=1, filtername=filtername,
                                      dither=True, nside=nside, ignore_obs='DD', nexp=nexp,
                                      detailers=[detailer]))
@@ -59,6 +61,7 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
                    target_maps=None, norm_factor=None, mod_year=2, max_season=10, day_offset=None):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
+    wfd_halves = wfd_half()
 
     # List to hold all the surveys (for easy plotting later)
     surveys = []
@@ -105,11 +108,12 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
         bfs.append(bf.N_obs_per_year_basis_function(filtername=filtername, nside=nside,
                                                     footprint=target_map[filtername],
-                                                    HA_limit=1., n_obs=3, season=250.))
+                                                    n_obs=3, season=300.))
         if filtername2 is not None:
             bfs.append(bf.N_obs_per_year_basis_function(filtername=filtername2, nside=nside,
                                                         footprint=target_map[filtername2],
-                                                        HA_limit=1., n_obs=3, season=250.))
+                                                        n_obs=3, season=300.))
+        bfs.append(bf.Map_modulo_basis_function(wfd_halves))
         # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
@@ -122,10 +126,10 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 0., 0., 0., 0., 0., 0.])
+        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 3., 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([6.0, 0.6, 3., 3., template_weight*2, 0., 0., 0., 0., 0., 0.])
+            weights = np.array([6.0, 0.6, 3., 3., template_weight*2, 3., 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
@@ -220,6 +224,20 @@ def slice_wfd_area_quad(target_map, scale_down_factor=0.2):
         scaled_maps.append(new_map)
 
     return scaled_maps
+
+
+def wfd_half(target_map=None):
+    """return Two maps that split the WFD in two dec bands
+    """
+    if target_map is None:
+        sg = standard_goals()
+        target_map = sg['r'] + 0
+    wfd_pix = np.where(target_map == 1)[0]
+    wfd_map = target_map*0
+    wfd_map[wfd_pix] = 1
+    wfd_halves = slice_wfd_area(2, {'r': wfd_map}, scale_down_factor=0)
+    result = [-wfd_halves[0]['r'], -wfd_halves[1]['r']]
+    return result
 
 
 if __name__ == "__main__":

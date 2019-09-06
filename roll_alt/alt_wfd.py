@@ -13,16 +13,15 @@ import sys
 import subprocess
 import os
 import argparse
-from footprints import *
 
 
-def gen_greedy_surveys(nside, nexp=1, target_map=None):
+def gen_greedy_surveys(nside, nexp=1):
     """
     Make a quick set of greedy surveys
     """
-    if target_map is None:
-        target_map = standard_goals(nside=nside)
+    target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
+    wfd_halves = wfd_half()
     # Let's remove the bluer filters since this should only be near twilight
     filters = ['r', 'i', 'z', 'y']
     surveys = []
@@ -38,6 +37,7 @@ def gen_greedy_surveys(nside, nexp=1, target_map=None):
                                                 norm_factor=norm_factor))
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
+        bfs.append(bf.Map_modulo_basis_function(wfd_halves))
         # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=40.))
@@ -45,7 +45,7 @@ def gen_greedy_surveys(nside, nexp=1, target_map=None):
         bfs.append(bf.Filter_loaded_basis_function(filternames=filtername))
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
 
-        weights = np.array([3.0, 0.3, 3., 3., 0., 0., 0., 0.])
+        weights = np.array([3.0, 0.3, 3., 3., 3., 0., 0., 0., 0.])
         surveys.append(Greedy_survey(bfs, weights, block_size=1, filtername=filtername,
                                      dither=True, nside=nside, ignore_obs='DD', nexp=nexp,
                                      detailers=[detailer]))
@@ -53,12 +53,10 @@ def gen_greedy_surveys(nside, nexp=1, target_map=None):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6.,
-                   target_map=None):
-    if target_map is None:
-        target_map = standard_goals(nside=nside)
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6.):
+    target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
-
+    wfd_halves = wfd_half()
     # List to hold all the surveys (for easy plotting later)
     surveys = []
 
@@ -103,6 +101,7 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
             bfs.append(bf.N_obs_per_year_basis_function(filtername=filtername2, nside=nside,
                                                         footprint=target_map[filtername2],
                                                         n_obs=3, season=300.))
+        bfs.append(bf.Map_modulo_basis_function(wfd_halves))
         # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
@@ -115,10 +114,10 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 0., 0., 0., 0., 0., 0.])
+        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 3., 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([6.0, 0.6, 3., 3., template_weight*2, 0., 0., 0., 0., 0., 0.])
+            weights = np.array([6.0, 0.6, 3., 3., template_weight*2, 3., 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
@@ -146,6 +145,52 @@ def run_sched(surveys, survey_length=365.25, nside=32, fileroot='baseline_', ver
                                                       verbose=verbose, extra_info=extra_info)
 
 
+def slice_wfd_area(nslice, target_map, scale_down_factor=0.2):
+    """
+    Slice the WFD area into even dec bands
+    """
+    # Make it so things still sum to one.
+    scale_up_factor = nslice - scale_down_factor*(nslice-1)
+
+    wfd = target_map['r'] * 0
+    wfd_indices = np.where(target_map['r'] == 1)[0]
+    wfd[wfd_indices] = 1
+    wfd_accum = np.cumsum(wfd)
+    split_wfd_indices = np.floor(np.max(wfd_accum)/nslice*(np.arange(nslice)+1)).astype(int)
+    split_wfd_indices = split_wfd_indices.tolist()
+    split_wfd_indices = [0] + split_wfd_indices
+
+    all_scaled_down = {}
+    for filtername in target_map:
+        all_scaled_down[filtername] = target_map[filtername]+0
+        all_scaled_down[filtername][wfd_indices] *= scale_down_factor
+
+    scaled_maps = []
+    for i in range(len(split_wfd_indices)-1):
+        new_map = {}
+        indices = wfd_indices[split_wfd_indices[i]:split_wfd_indices[i+1]]
+        for filtername in all_scaled_down:
+            new_map[filtername] = all_scaled_down[filtername] + 0
+            new_map[filtername][indices] = target_map[filtername][indices]*scale_up_factor
+        scaled_maps.append(new_map)
+
+    return scaled_maps
+
+
+def wfd_half(target_map=None):
+    """return Two maps that split the WFD in two dec bands
+    """
+    if target_map is None:
+        sg = standard_goals()
+        target_map = sg['r'] + 0
+    wfd_pix = np.where(target_map == 1)[0]
+    wfd_map = target_map*0
+    wfd_map[wfd_pix] = 1
+    wfd_halves = slice_wfd_area(2, {'r': wfd_map}, scale_down_factor=0)
+    result = [-wfd_halves[0]['r'], -wfd_halves[1]['r']]
+    return result
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -162,7 +207,6 @@ if __name__ == "__main__":
     parser.add_argument("--outDir", type=str, default="")
     parser.add_argument("--perNight", dest='perNight', action='store_true')
     parser.add_argument("--maxDither", type=float, default=0.7, help="Dither size for DDFs (deg)")
-    parser.add_argument("--target_name", type=str, default="baseline")
 
     args = parser.parse_args()
     nexp = args.nexp
@@ -173,7 +217,6 @@ if __name__ == "__main__":
     verbose = args.verbose
     per_night = args.perNight
     max_dither = args.maxDither
-    target_name = args.target_name
 
     nside = 32
 
@@ -185,21 +228,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    # Just load up all the potential footprints, then use the arg to grab the right one
-    target_maps = {}
-    target_maps['big_sky'] = big_sky(nside=nside)
-    target_maps['gp_heavy'] = gp_smooth(nside=nside)
-    target_maps['baseline'] = standard_goals(nside=nside)
-    target_maps['big_sky_nouiy'] = big_sky_nouiy(nside=nside)
-    target_maps['newA'] = newA(nside=nside)
-    target_maps['newB'] = newB(nside=nside)
-    target_maps['bluer_footprint'] = bluer_footprint(nside=nside)
-    target_maps['stuck_rolling'] = stuck_rolling(nside=nside)
-    target_maps['big_sky_dust'] = big_sky_dust(nside=nside)
-    target_maps['no_gp_north'] = no_gp_north(nside=nside)
-    target_maps['add_mag_clouds'] = add_mag_clouds(nside=nside)
-
-    fileroot = '%s_' % target_name
+    fileroot = 'altwfd_'
     file_end = 'v1.3_'
 
     observatory = Model_observatory(nside=nside)
@@ -215,9 +244,8 @@ if __name__ == "__main__":
 
     if Pairs:
         if mixedPairs:
-            greedy = gen_greedy_surveys(nside, nexp=nexp, target_map=target_maps[target_name])
-            blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset,
-                                   target_map=target_maps[target_name])
+            greedy = gen_greedy_surveys(nside, nexp=nexp)
+            blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,

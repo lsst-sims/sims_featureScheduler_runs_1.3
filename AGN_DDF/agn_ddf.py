@@ -238,11 +238,11 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
         bfs.append(bf.N_obs_per_year_basis_function(filtername=filtername, nside=nside,
                                                     footprint=target_map[filtername],
-                                                    HA_limit=1., n_obs=3, season=250.))
+                                                    n_obs=3, season=300.))
         if filtername2 is not None:
             bfs.append(bf.N_obs_per_year_basis_function(filtername=filtername2, nside=nside,
                                                         footprint=target_map[filtername2],
-                                                        HA_limit=1., n_obs=3, season=250.))
+                                                        n_obs=3, season=300.))
         # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
