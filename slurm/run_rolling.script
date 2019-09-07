@@ -1,0 +1,10 @@
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/simple_rolling.py --splits 2 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/simple_rolling.py --splits 3 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/simple_rolling.py --splits 5 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/simple_rolling.py --splits 10 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/delayed_rolling.py --splits 2 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/delayed_rolling.py --splits 3 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/delayed_rolling.py --splits 6 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/delayed_rolling.py --splits 2 --scale_down_factor 0.1 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/delayed_rolling.py --splits 3 --scale_down_factor 0.1 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence/delayed_rolling.py --splits 6 --scale_down_factor 0.1 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/rolling_cadence
