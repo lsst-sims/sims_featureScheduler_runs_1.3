@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pylab as plt
 import healpy as hp
 from lsst.sims.featureScheduler.modelObservatory import Model_observatory
-from lsst.sims.featureScheduler.schedulers import Core_scheduler, simple_filter_sched
+from lsst.sims.featureScheduler.schedulers import Core_scheduler
 from lsst.sims.featureScheduler.utils import standard_goals, calc_norm_factor, create_season_offset
 import lsst.sims.featureScheduler.basis_functions as bf
 from lsst.sims.featureScheduler.surveys import (generate_dd_surveys, Greedy_survey,
@@ -51,7 +51,7 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6.):
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=0.):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
 
@@ -130,18 +130,16 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
 
 
 def run_sched(surveys, survey_length=365.25, nside=32, fileroot='baseline_', verbose=False,
-              extra_info=None, illum_limit=60.):
+              extra_info=None):
     years = np.round(survey_length/365.25)
     scheduler = Core_scheduler(surveys, nside=nside)
     n_visit_limit = None
     observatory = Model_observatory(nside=nside)
-    filter_sched = simple_filter_sched(illum_limit=illum_limit)
     observatory, scheduler, observations = sim_runner(observatory, scheduler,
                                                       survey_length=survey_length,
                                                       filename=fileroot+'%iyrs.db' % years,
                                                       delete_past=True, n_visit_limit=n_visit_limit,
-                                                      verbose=verbose, extra_info=extra_info,
-                                                      filter_scheduler=filter_sched)
+                                                      verbose=verbose, extra_info=extra_info)
 
 
 if __name__ == "__main__":
@@ -160,7 +158,6 @@ if __name__ == "__main__":
     parser.add_argument("--outDir", type=str, default="")
     parser.add_argument("--perNight", dest='perNight', action='store_true')
     parser.add_argument("--maxDither", type=float, default=0.7, help="Dither size for DDFs (deg)")
-    parser.add_argument("--illum_limit", type=float, default=60.)
 
     args = parser.parse_args()
     nexp = args.nexp
@@ -171,7 +168,6 @@ if __name__ == "__main__":
     verbose = args.verbose
     per_night = args.perNight
     max_dither = args.maxDither
-    illum_limit = args.illum_limit
 
     nside = 32
 
@@ -183,7 +179,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'filterload_'+'illum%i_' % illum_limit
+    fileroot = 'altcheck_'
     file_end = 'v1.3_'
 
     observatory = Model_observatory(nside=nside)
@@ -204,4 +200,4 @@ if __name__ == "__main__":
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
-                      nside=nside, illum_limit=illum_limit)
+                      nside=nside)

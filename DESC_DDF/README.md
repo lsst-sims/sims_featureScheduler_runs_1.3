@@ -1,0 +1,1 @@
+Attempt to use the DDF cadence proposed in the DESC white paper. When the u-band filter is loaded is varied. As with the AGN DDF experiment, the shorter DDF sequences might make it difficult to identify solar system objects compared to other transients. 
