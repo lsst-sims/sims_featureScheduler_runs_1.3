@@ -89,8 +89,8 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None, reward_value=100):
     filters = 'rgizy'
     nexps = [5, 7, 19, 24, 5]
     survey_name = 'DD:EDFS'
-    RAs = [58.97, 63.6]
-    decs = [-49.28, -47.60]
+    RAs = np.radians([58.97, 63.6])
+    decs = np.radians([-49.28, -47.60])
     sequence = []
     exptime = 30
     visit_nexp = 1
