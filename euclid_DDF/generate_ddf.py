@@ -85,35 +85,52 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None, reward_value=100):
                                         nexp=nexp, detailers=detailers))
 
     # Euclid Fields
-    survey_name = 'DD:EDFS1'
-    RA = 58.97
-    dec = -49.28
+    # I can use the sequence kwarg to do two positions per sequence
+    filters = 'rgizy'
+    nexps = [5, 7, 19, 24, 5]
+    survey_name = 'DD:EDFS'
+    RAs = [58.97, 63.6]
+    decs = [-49.28, -47.60]
+    sequence = []
+    exptime = 30
+    visit_nexp = 1
+    for filtername, nexp in zip(filters, nexps):
+        for ra, dec in zip(RAs, decs):
+            for num in range(nexp):
+                obs = empty_observation()
+                obs['filter'] = filtername
+                obs['exptime'] = exptime
+                obs['RA'] = ra
+                obs['dec'] = dec
+                obs['nexp'] = visit_nexp
+                obs['note'] = survey_name
+                sequence.append(obs)
+
     ha_limits = ([0., 1.5], [21.5, 24.])
-    bfs = dd_bfs(RA, dec, survey_name, ha_limits)
-    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
-                                        nvis=[5, 7, 19, 24, 5],
+    bfs = dd_bfs(RAs[0], decs[0], survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence=sequence,
                                         survey_name=survey_name, reward_value=reward_value, nside=nside,
                                         nexp=nexp, detailers=detailers))
 
-    survey_name = 'DD:u,EDFS1'
-    bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
-    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u', nvis=[8],
-                                        survey_name=survey_name, reward_value=reward_value, nside=nside,
-                                        nexp=nexp, detailers=detailers))
-
-    survey_name = 'DD:EDFS2'
-    RA = 63.6
-    dec = -47.60
-    ha_limits = ([0., 1.5], [21.5, 24.])
-    bfs = dd_bfs(RA, dec, survey_name, ha_limits)
-    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='rgizy',
-                                        nvis=[5, 7, 19, 24, 5],
-                                        survey_name=survey_name, reward_value=reward_value, nside=nside,
-                                        nexp=nexp, detailers=detailers))
-
-    survey_name = 'DD:u,EDFS2'
-    bfs = dd_u_bfs(RA, dec, survey_name, ha_limits)
-    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence='u', nvis=[8],
+    survey_name = 'DD:u,EDFS'
+    filters = 'u'
+    nexps = [8]
+    sequence = []
+    exptime = 30
+    visit_nexp = 1
+    for filtername, nexp in zip(filters, nexps):
+        for ra, dec in zip(RAs, decs):
+            for num in range(nexp):
+                obs = empty_observation()
+                obs['filter'] = filtername
+                obs['exptime'] = exptime
+                obs['RA'] = ra
+                obs['dec'] = dec
+                obs['nexp'] = visit_nexp
+                obs['note'] = survey_name
+                sequence.append(obs)
+    bfs = dd_u_bfs(RAs[0], decs[0], survey_name, ha_limits)
+    surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence=sequence,
                                         survey_name=survey_name, reward_value=reward_value, nside=nside,
                                         nexp=nexp, detailers=detailers))
 

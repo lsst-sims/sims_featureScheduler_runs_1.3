@@ -193,7 +193,7 @@ if __name__ == "__main__":
     # Set up the DDF surveys to dither
     dither_detailer = detailers.Dither_detailer(per_night=per_night, max_dither=max_dither)
     details = [detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.), dither_detailer]
-    ddfs = generate_dd_surveys(nside=nside, nexp=nexp, detailers=details)
+    ddfs = generate_dd_surveys(nside=nside, nexp=nexp, detailers=details, reward_value=None)
 
     if Pairs:
         if mixedPairs:
