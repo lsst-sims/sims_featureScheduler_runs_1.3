@@ -1,0 +1,4 @@
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth/wfd_footprints.py --target_name wfd_standard --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth/wfd_footprints.py --target_name wfd_95 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth/wfd_footprints.py --target_name wfd_90 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth/wfd_footprints.py --target_name wfd_85 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/wfd_depth
