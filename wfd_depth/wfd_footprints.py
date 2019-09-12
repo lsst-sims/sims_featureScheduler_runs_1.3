@@ -215,6 +215,10 @@ if __name__ == "__main__":
     target_maps['wfd_95'] = wfd_scale(scale=0.95)
     target_maps['wfd_90'] = wfd_scale(scale=0.90)
     target_maps['wfd_85'] = wfd_scale(scale=0.85)
+    target_maps['wfd_80'] = wfd_scale(scale=0.80)
+    target_maps['wfd_75'] = wfd_scale(scale=0.75)
+    target_maps['wfd_70'] = wfd_scale(scale=0.70)
+    target_maps['wfd_65'] = wfd_scale(scale=0.65)
 
     target_map = target_maps[target_name]
 
