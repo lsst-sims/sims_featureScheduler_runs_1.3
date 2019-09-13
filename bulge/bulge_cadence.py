@@ -95,6 +95,15 @@ def bulge_footprint(nside=32, bulge_frac=1., ll_frac=1., i_heavy=False):
 
     return sg
 
+def bulge_pix(nside=32):
+    result = np.zeros(hp.nside2npix(nside))
+    ra, dec = _hpid2RaDec(nside, np.arange(hp.nside2npix(nside)))
+    coord = SkyCoord(ra=ra*u.rad, dec=dec*u.rad)
+    g_long, g_lat = coord.galactic.l.deg, coord.galactic.b.deg
+    bulge_pix = np.where((g_long > -20) & (g_long < 20.) & (g_lat > -10) & (g_lat < 10.))
+    result[bulge_pix] = 1
+    return result
+
 
 def gen_greedy_surveys(nside, nexp=1, target_map=None):
     """
@@ -133,6 +142,7 @@ def gen_greedy_surveys(nside, nexp=1, target_map=None):
 
 def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6., target_map=None):
     norm_factor = calc_norm_factor(target_map)
+    bulge_map = bulge_pix(nside=nside)
 
     # List to hold all the surveys (for easy plotting later)
     surveys = []
@@ -190,16 +200,23 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        weights = np.array([3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 0., 0., 0., 0., 0., 0.])
+        weights = [3.0, 3.0, .3, .3, 3., 3., template_weight, template_weight, 0., 0., 0., 0., 0., 0.]
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([6.0, 0.6, 3., 3., template_weight*2, 0., 0., 0., 0., 0., 0.])
+            weights = [6.0, 0.6, 3., 3., template_weight*2, 0., 0., 0., 0., 0., 0.]
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
             survey_name = 'blob, %s%s' % (filtername, filtername2)
         if filtername2 is not None:
             detailer_list.append(detailers.Take_as_pairs_detailer(filtername=filtername2))
+
+        # Let's add on the cadence driver for specific fitlers
+        if filtername in 'griz':
+            bfs.append(bf.Cadence_in_season_basis_function(bulge_map, nside=nside, filtername='griz',
+                                                           season_span=2.5, cadence=2.5))
+            weights.append(3.)
+        weights = np.array(weights)
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=filtername2,
                                    ideal_pair_time=pair_time, nside=nside,
                                    survey_note=survey_name, ignore_obs='DD', dither=True,
@@ -260,7 +277,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'bulges_'+strat_name
+    fileroot = 'bulges_cadence_'+strat_name
     file_end = 'v1.3_'
 
     observatory = Model_observatory(nside=nside)
