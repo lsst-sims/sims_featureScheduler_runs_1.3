@@ -86,7 +86,7 @@ def generate_twilight_neo(nside):
         detailer_list = []
         detailer_list.append(detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.))
         detailer_list.append(detailers.Close_alt_detailer())
-        detailer_list.append(detailers.Twilight_triple_detailer(exptime=exptime, nexp=nexp))
+        detailer_list.append(detailers.Twilight_triple_detailer(slew_estimate=4.5, n_repeat=3))
         bfs = []
 
         bfs.append(bf.Target_map_basis_function(filtername=filtername,
@@ -98,16 +98,18 @@ def generate_twilight_neo(nside):
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
         # XXX
         # Need a toward the sun, reward high airmass, with an airmass cutoff basis function.
+        bfs.append(bf.Near_sun_twilight_basis_function(nside=nside, max_airmass=2.))
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
         bfs.append(bf.Filter_loaded_basis_function(filternames=filtername))
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        weights = [3., 3., 3., 0., 0., 0., 0.]
+        bfs.append(bf.Sun_alt_limit_basis_function())
+        weights = [3., 3., 3., 3., 0., 0., 0., 0., 0.]
         # Set huge ideal pair time and use the detailer to cut down the list of observations to fit twilight?
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=None,
-                                   ideal_pair_time=120., nside=nside, exptime=exptime,
+                                   ideal_pair_time=3., nside=nside, exptime=exptime,
                                    survey_note=survey_name, ignore_obs=['DD', '', 'blob'], dither=True,
-                                   nexp=nexp, detailers=detailer_list))
+                                   nexp=nexp, detailers=detailer_list, az_range=180., twilight_scale=False))
 
     return surveys
 
@@ -258,7 +260,8 @@ if __name__ == "__main__":
         if mixedPairs:
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
-            surveys = [ddfs, blobs, greedy]
+            neo = generate_twilight_neo(nside)
+            surveys = [ddfs, blobs, neo, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
                       nside=nside)
