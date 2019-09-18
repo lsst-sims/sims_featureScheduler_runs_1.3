@@ -49,7 +49,7 @@ def gen_greedy_surveys(nside, nexp=1):
         weights = np.array([3.0, 0.3, 3., 3., 0., 0., 0., 0.])
         surveys.append(Greedy_survey(bfs, weights, block_size=1, filtername=filtername,
                                      dither=True, nside=nside, ignore_obs=['DD', 'twilight_neo'], nexp=nexp,
-                                     detailers=[detailer]))
+                                     detailers=[detailer], survey_name='greedy'))
 
     return surveys
 
@@ -104,11 +104,12 @@ def generate_twilight_neo(nside):
         bfs.append(bf.Filter_loaded_basis_function(filternames=filtername))
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
         bfs.append(bf.Sun_alt_limit_basis_function())
-        weights = [3., 3., 3., 3., 0., 0., 0., 0., 0.]
+        bfs.append(bf.Time_in_twilight_basis_function(time_needed=5.))
+        weights = [0.1, 3., 3., 3., 0., 0., 0., 0., 0., 0.]
         # Set huge ideal pair time and use the detailer to cut down the list of observations to fit twilight?
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=None,
                                    ideal_pair_time=3., nside=nside, exptime=exptime,
-                                   survey_note=survey_name, ignore_obs=['DD', '', 'blob'], dither=True,
+                                   survey_note=survey_name, ignore_obs=['DD', 'greedy', 'blob'], dither=True,
                                    nexp=nexp, detailers=detailer_list, az_range=180., twilight_scale=False))
 
     return surveys
