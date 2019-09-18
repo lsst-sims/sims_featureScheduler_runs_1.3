@@ -46,7 +46,7 @@ def gen_greedy_surveys(nside, nexp=1):
         weights = np.array([3.0, 0.3, 3., 3., 0., 0., 0., 0.])
         surveys.append(Greedy_survey(bfs, weights, block_size=1, filtername=filtername,
                                      dither=True, nside=nside, ignore_obs='DD', nexp=nexp,
-                                     detailers=[detailer]))
+                                     detailers=[detailer], survey_name='greedy'))
 
     return surveys
 
