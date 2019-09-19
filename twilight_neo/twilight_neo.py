@@ -69,7 +69,7 @@ def ecliptic_target(nside=32, dist_to_eclip=40., dec_max=30.):
     return result
 
 
-def generate_twilight_neo(nside):
+def generate_twilight_neo(nside, night_pattern=None):
     surveys = []
     nexp = 1
     filters = 'riz'
@@ -105,7 +105,8 @@ def generate_twilight_neo(nside):
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
         bfs.append(bf.Sun_alt_limit_basis_function())
         bfs.append(bf.Time_in_twilight_basis_function(time_needed=5.))
-        weights = [0.1, 3., 3., 3., 0., 0., 0., 0., 0., 0.]
+        bfs.append(bf.Night_modulo_basis_function(pattern=night_pattern))
+        weights = [0.1, 3., 3., 3., 0., 0., 0., 0., 0., 0., 0.]
         # Set huge ideal pair time and use the detailer to cut down the list of observations to fit twilight?
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=None,
                                    ideal_pair_time=3., nside=nside, exptime=exptime,
@@ -222,6 +223,7 @@ if __name__ == "__main__":
     parser.add_argument("--outDir", type=str, default="")
     parser.add_argument("--perNight", dest='perNight', action='store_true')
     parser.add_argument("--maxDither", type=float, default=0.7, help="Dither size for DDFs (deg)")
+    parser.add_argument("--night_mod", type=int, default=1)
 
     args = parser.parse_args()
     nexp = args.nexp
@@ -232,6 +234,7 @@ if __name__ == "__main__":
     verbose = args.verbose
     per_night = args.perNight
     max_dither = args.maxDither
+    night_mod = args.night_mod
 
     nside = 32
 
@@ -243,8 +246,11 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'twilight_neo_'
+    fileroot = 'twilight_neo_mod%i_' % night_mod
     file_end = 'v1.3_'
+
+    pattern_dict = {1: [True], 2: [True, False], 3: [True, False, False]}
+    night_pattern = pattern_dict[night_mod]
 
     observatory = Model_observatory(nside=nside)
     conditions = observatory.return_conditions()
@@ -261,7 +267,7 @@ if __name__ == "__main__":
         if mixedPairs:
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
-            neo = generate_twilight_neo(nside)
+            neo = generate_twilight_neo(nside, night_pattern=night_pattern)
             surveys = [ddfs, blobs, neo, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
