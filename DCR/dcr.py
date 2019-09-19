@@ -13,9 +13,6 @@ import sys
 import subprocess
 import os
 import argparse
-from astropy.coordinates import SkyCoord
-from astropy import units as u
-from lsst.sims.utils import _hpid2RaDec
 
 
 def gen_greedy_surveys(nside, nexp=1):
@@ -48,71 +45,40 @@ def gen_greedy_surveys(nside, nexp=1):
 
         weights = np.array([3.0, 0.3, 3., 3., 0., 0., 0., 0.])
         surveys.append(Greedy_survey(bfs, weights, block_size=1, filtername=filtername,
-                                     dither=True, nside=nside, ignore_obs=['DD', 'twilight_neo'], nexp=nexp,
+                                     dither=True, nside=nside, ignore_obs='DD', nexp=nexp,
                                      detailers=[detailer], survey_name='greedy'))
 
     return surveys
 
 
-def ecliptic_target(nside=32, dist_to_eclip=40., dec_max=30.):
-    """Generate a target_map for the area around the ecliptic
-    """
-
-    ra, dec = _hpid2RaDec(nside, np.arange(hp.nside2npix(nside)))
-    result = np.zeros(ra.size)
-    coord = SkyCoord(ra=ra*u.rad, dec=dec*u.rad)
-    eclip_lat = coord.barycentrictrueecliptic.lat.radian
-    good = np.where((np.abs(eclip_lat) < np.radians(dist_to_eclip)) &
-                    (dec < np.radians(dec_max)))
-    result[good] += 1
-
-    return result
-
-
-def generate_twilight_neo(nside, night_pattern=None):
+def generate_high_am(nside, nexp=1, n_high_am=3, template_weight=6.):
+    target_map = standard_goals(nside=nside)['r']
+    target_map[np.where(target_map > 0)] = 1.
+    filters = ['u', 'g']
     surveys = []
-    nexp = 1
-    filters = 'riz'
-    survey_name = 'twilight_neo'
-    target_map_one = ecliptic_target(nside=nside)
-    target_map = {}
-    for filtername in filters:
-        target_map[filtername] = target_map_one
-
-    norm_factor = calc_norm_factor(target_map)
-    exptime = 1.
-
+    survey_name = 'high_am'
+    blob_time = 22.  # set to something
     for filtername in filters:
         detailer_list = []
         detailer_list.append(detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.))
         detailer_list.append(detailers.Close_alt_detailer())
-        detailer_list.append(detailers.Twilight_triple_detailer(slew_estimate=4.5, n_repeat=3))
         bfs = []
-
-        bfs.append(bf.Target_map_basis_function(filtername=filtername,
-                                                target_map=target_map[filtername],
-                                                out_of_bounds_val=np.nan, nside=nside,
-                                                norm_factor=norm_factor))
-
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
-        # XXX
-        # Need a toward the sun, reward high airmass, with an airmass cutoff basis function.
-        bfs.append(bf.Near_sun_twilight_basis_function(nside=nside, max_airmass=2.))
+        bfs.append(bf.N_obs_high_am_basis_function(nside=nside, footprint=target_map, filtername=filtername,
+                                                   n_obs=n_high_am, season=300.))
+        # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
         bfs.append(bf.Filter_loaded_basis_function(filternames=filtername))
+        bfs.append(bf.Time_to_twilight_basis_function(time_needed=blob_time))
+        bfs.append(bf.Not_twilight_basis_function())
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        bfs.append(bf.Sun_alt_limit_basis_function())
-        bfs.append(bf.Time_in_twilight_basis_function(time_needed=5.))
-        bfs.append(bf.Night_modulo_basis_function(pattern=night_pattern))
-        weights = [0.1, 3., 3., 3., 0., 0., 0., 0., 0., 0., 0.]
-        # Set huge ideal pair time and use the detailer to cut down the list of observations to fit twilight?
+        weights = np.array([0.6, 3., template_weight*2, 0., 0., 0., 0., 0., 0.])
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=None,
-                                   ideal_pair_time=3., nside=nside, exptime=exptime,
-                                   survey_note=survey_name, ignore_obs=['DD', 'greedy', 'blob'], dither=True,
-                                   nexp=nexp, detailers=detailer_list, az_range=180., twilight_scale=False))
-
+                                   ideal_pair_time=blob_time, nside=nside,
+                                   survey_note=survey_name, ignore_obs='DD', dither=True,
+                                   nexp=nexp, detailers=detailer_list))
     return surveys
 
 
@@ -188,7 +154,7 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
             detailer_list.append(detailers.Take_as_pairs_detailer(filtername=filtername2))
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=filtername2,
                                    ideal_pair_time=pair_time, nside=nside,
-                                   survey_note=survey_name, ignore_obs=['DD', 'twilight_neo'], dither=True,
+                                   survey_note=survey_name, ignore_obs='DD', dither=True,
                                    nexp=nexp, detailers=detailer_list))
 
     return surveys
@@ -223,7 +189,6 @@ if __name__ == "__main__":
     parser.add_argument("--outDir", type=str, default="")
     parser.add_argument("--perNight", dest='perNight', action='store_true')
     parser.add_argument("--maxDither", type=float, default=0.7, help="Dither size for DDFs (deg)")
-    parser.add_argument("--night_mod", type=int, default=1)
 
     args = parser.parse_args()
     nexp = args.nexp
@@ -234,7 +199,6 @@ if __name__ == "__main__":
     verbose = args.verbose
     per_night = args.perNight
     max_dither = args.maxDither
-    night_mod = args.night_mod
 
     nside = 32
 
@@ -246,12 +210,8 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'twilight_neo_mod%i_' % night_mod
+    fileroot = 'dcr_'
     file_end = 'v1.3_'
-
-    pattern_dict = {1: [True], 2: [True, False], 3: [True, False, False],
-                    4: [True, False, False, False]}
-    night_pattern = pattern_dict[night_mod]
 
     observatory = Model_observatory(nside=nside)
     conditions = observatory.return_conditions()
@@ -268,8 +228,9 @@ if __name__ == "__main__":
         if mixedPairs:
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
-            neo = generate_twilight_neo(nside, night_pattern=night_pattern)
-            surveys = [ddfs, blobs, neo, greedy]
+            high_am = generate_high_am(nside, nexp=nexp)
+            blobs.extend(high_am)
+            surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
                       nside=nside)
