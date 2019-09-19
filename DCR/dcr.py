@@ -51,7 +51,9 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_high_am(nside, nexp=1, n_high_am=3, template_weight=6.):
+def generate_high_am(nside, nexp=1, n_high_am=2, template_weight=6.):
+    """Let's set this up like the blob, but then give it a little extra weight.
+    """
     target_map = standard_goals(nside=nside)['r']
     target_map[np.where(target_map > 0)] = 1.
     filters = ['u', 'g']
@@ -63,10 +65,12 @@ def generate_high_am(nside, nexp=1, n_high_am=3, template_weight=6.):
         detailer_list.append(detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.))
         detailer_list.append(detailers.Close_alt_detailer())
         bfs = []
+        bfs.append(bf.M5_diff_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
         bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
         bfs.append(bf.N_obs_high_am_basis_function(nside=nside, footprint=target_map, filtername=filtername,
                                                    n_obs=n_high_am, season=300.))
+        bfs.append(bf.Constant_basis_function())
         # Masks, give these 0 weight
         bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
         bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
@@ -74,7 +78,7 @@ def generate_high_am(nside, nexp=1, n_high_am=3, template_weight=6.):
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=blob_time))
         bfs.append(bf.Not_twilight_basis_function())
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        weights = np.array([0.6, 3., template_weight*2, 0., 0., 0., 0., 0., 0.])
+        weights = np.array([6., 0.6, 3., template_weight*2, 1., 0., 0., 0., 0., 0., 0.])
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=None,
                                    ideal_pair_time=blob_time, nside=nside,
                                    survey_note=survey_name, ignore_obs='DD', dither=True,
