@@ -51,42 +51,6 @@ def gen_greedy_surveys(nside, nexp=1):
     return surveys
 
 
-def generate_high_am(nside, nexp=1, n_high_am=2, template_weight=6.):
-    """Let's set this up like the blob, but then give it a little extra weight.
-    """
-    target_map = standard_goals(nside=nside)['r']
-    target_map[np.where(target_map > 0)] = 1.
-    filters = ['u', 'g']
-    surveys = []
-    survey_name = 'high_am'
-    blob_time = 22.  # set to something
-    for filtername in filters:
-        detailer_list = []
-        detailer_list.append(detailers.Camera_rot_detailer(min_rot=-87., max_rot=87.))
-        detailer_list.append(detailers.Close_alt_detailer())
-        bfs = []
-        bfs.append(bf.M5_diff_basis_function(filtername=filtername, nside=nside))
-        bfs.append(bf.Slewtime_basis_function(filtername=filtername, nside=nside))
-        bfs.append(bf.Strict_filter_basis_function(filtername=filtername))
-        bfs.append(bf.N_obs_high_am_basis_function(nside=nside, footprint=target_map, filtername=filtername,
-                                                   n_obs=n_high_am, season=300.,
-                                                   out_of_bounds_val=np.nan))
-        bfs.append(bf.Constant_basis_function())
-        # Masks, give these 0 weight
-        bfs.append(bf.Zenith_shadow_mask_basis_function(nside=nside, shadow_minutes=60., max_alt=76.))
-        bfs.append(bf.Moon_avoidance_basis_function(nside=nside, moon_distance=30.))
-        bfs.append(bf.Filter_loaded_basis_function(filternames=filtername))
-        bfs.append(bf.Time_to_twilight_basis_function(time_needed=blob_time))
-        bfs.append(bf.Not_twilight_basis_function())
-        bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        weights = np.array([6., 0.6, 3., template_weight*2, 1., 0., 0., 0., 0., 0., 0.])
-        surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=None,
-                                   ideal_pair_time=blob_time, nside=nside,
-                                   survey_note=survey_name, ignore_obs='DD', dither=True,
-                                   nexp=nexp, detailers=detailer_list))
-    return surveys
-
-
 def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6.):
     target_map = standard_goals(nside=nside)
     norm_factor = calc_norm_factor(target_map)
@@ -159,7 +123,7 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
             detailer_list.append(detailers.Take_as_pairs_detailer(filtername=filtername2))
         surveys.append(Blob_survey(bfs, weights, filtername1=filtername, filtername2=filtername2,
                                    ideal_pair_time=pair_time, nside=nside,
-                                   survey_note=survey_name, ignore_obs=['DD', 'high_am'], dither=True,
+                                   survey_note=survey_name, ignore_obs='DD', dither=True,
                                    nexp=nexp, detailers=detailer_list))
 
     return surveys
@@ -181,7 +145,7 @@ def run_sched(surveys, survey_length=365.25, nside=32, fileroot='baseline_', ver
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--nexp", type=int, default=1, help="Number of exposures per visit")
+    parser.add_argument("--nexp", type=int, default=2, help="Number of exposures per visit")
     parser.add_argument("--Pairs", dest='pairs', action='store_true')
     parser.add_argument("--noPairs", dest='pairs', action='store_false')
     parser.set_defaults(pairs=True)
@@ -194,7 +158,6 @@ if __name__ == "__main__":
     parser.add_argument("--outDir", type=str, default="")
     parser.add_argument("--perNight", dest='perNight', action='store_true')
     parser.add_argument("--maxDither", type=float, default=0.7, help="Dither size for DDFs (deg)")
-    parser.add_argument("--nham", type=int, default=1)
 
     args = parser.parse_args()
     nexp = args.nexp
@@ -205,7 +168,6 @@ if __name__ == "__main__":
     verbose = args.verbose
     per_night = args.perNight
     max_dither = args.maxDither
-    nham = args.nham
 
     nside = 32
 
@@ -217,7 +179,7 @@ if __name__ == "__main__":
     extra_info['git hash'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'])
     extra_info['file executed'] = os.path.realpath(__file__)
 
-    fileroot = 'dcr_nham%i_' % nham
+    fileroot = 'baseline_2snap_'
     file_end = 'v1.3_'
 
     observatory = Model_observatory(nside=nside)
@@ -235,8 +197,6 @@ if __name__ == "__main__":
         if mixedPairs:
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
-            high_am = generate_high_am(nside, nexp=nexp, n_high_am=nham)
-            blobs.extend(high_am)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
