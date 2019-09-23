@@ -1,0 +1,2 @@
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust/alt_roll_dust.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust/alt_wfd_dust.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust
