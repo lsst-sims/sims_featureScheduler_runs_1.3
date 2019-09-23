@@ -10,3 +10,12 @@ New things in v1.3 compared to the v1.2 baseline
 * Decrease the number of nights the u-band is loaded per lunation
 
 The limited u-band availability does mean there are a few years where the entire sky does not get observed in u.
+
+
+## baseline_v1.3_10yrs.db 
+
+The standard baseline
+
+## baseline_2snap_v1.3_10yrs.db
+
+The standard baseline but visits are 2x15s rather than 1x30s.
