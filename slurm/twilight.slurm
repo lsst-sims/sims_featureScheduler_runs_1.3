@@ -2,7 +2,7 @@
 
 ## Job Name
 
-#SBATCH --job-name=all
+#SBATCH --job-name=twilight
 
 ## Allocation Definition
 
@@ -18,7 +18,7 @@
 
 ## Walltime (hours:min:sec) Do not specify a walltime substantially more than your job needs.
 
-#SBATCH --time=35:00:00
+#SBATCH --time=12:00:00
 
 ## Memory per node. It is important to specify the memory since the default memory is very small.
 
@@ -28,7 +28,7 @@
 
 ## See above section on "Specifying memory" for choices for --mem.
 
-#SBATCH --mem=250G
+#SBATCH --mem=100G
 
 ## Specify the working directory for this job
 
@@ -47,11 +47,10 @@
 ## Set up the evironment
 source /gscratch/astro/yoachim/lsst/loadLSST.bash
 setup sims_featureScheduler -t $USER 
-setup sims_maps
 
 cd /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/slurm
 
 ## run all the baseline commands in parallel
 module load parallel-20170722
-
-cat run_all.script | parallel -j 20
+## only need to do 5 at a time, since there are only that many in the list
+cat run_twilight.script | parallel -j 20
