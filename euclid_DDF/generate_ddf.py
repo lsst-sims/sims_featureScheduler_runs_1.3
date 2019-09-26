@@ -89,6 +89,7 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None, reward_value=100):
     filters = 'rgizy'
     nexps = [5, 7, 19, 24, 5]
     survey_name = 'DD:EDFS'
+    # Note the sequences need to be in radians since they are using observation objects directly
     RAs = np.radians([58.97, 63.6])
     decs = np.radians([-49.28, -47.60])
     sequence = []
@@ -106,8 +107,9 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None, reward_value=100):
                 obs['note'] = survey_name
                 sequence.append(obs)
 
-    ha_limits = ([0., 1.5], [21.5, 24.])
-    bfs = dd_bfs(RAs[0], decs[0], survey_name, ha_limits)
+    ha_limits = ([0., 1.5], [22.5, 24.])
+    # And back to degrees for the basis function
+    bfs = dd_bfs(np.degrees(RAs[0]), np.degrees(decs[0]), survey_name, ha_limits)
     surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence=sequence,
                                         survey_name=survey_name, reward_value=reward_value, nside=nside,
                                         nexp=nexp, detailers=detailers))
@@ -129,7 +131,7 @@ def generate_dd_surveys(nside=None, nexp=2, detailers=None, reward_value=100):
                 obs['nexp'] = visit_nexp
                 obs['note'] = survey_name
                 sequence.append(obs)
-    bfs = dd_u_bfs(RAs[0], decs[0], survey_name, ha_limits)
+    bfs = dd_u_bfs(np.degrees(RAs[0]), np.degrees(decs[0]), survey_name, ha_limits)
     surveys.append(Deep_drilling_survey(bfs, RA, dec, sequence=sequence,
                                         survey_name=survey_name, reward_value=reward_value, nside=nside,
                                         nexp=nexp, detailers=detailers))

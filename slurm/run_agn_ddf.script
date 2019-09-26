@@ -1,1 +1,4 @@
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 60  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 30  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 15  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 10  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF

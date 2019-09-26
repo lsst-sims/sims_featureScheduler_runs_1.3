@@ -1,4 +1,7 @@
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 60  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 30  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 15  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF/agn_ddf.py --illum_limit 10  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/AGN_DDF
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/alt_sched/alt_sched.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/alt_sched
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/alt_sched/alt_sched_large.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/alt_sched
 
@@ -7,6 +10,8 @@ python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust/alt_roll_dust.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust/alt_wfd_dust.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt_dust
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baseline/baselines.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baseline
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baseline/baselines_2snap.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baseline
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baseline/baselines_nomix.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/baseline
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/bulge/bulges.py --strat_name bs --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/bulge
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/bulge/bulges.py --strat_name bulge_wfd --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/bulge
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/bulge/bulges.py --strat_name i_heavy --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/bulge
@@ -24,6 +29,7 @@ python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 5  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 4  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF/desc_ddf.py --illum_limit 3  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/DESC_DDF
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/euclid_DDF/euclid_ddf.py --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/euclid_DDF
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/filter_load/filter_load.py --illum_limit 60  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/filter_load
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/filter_load/filter_load.py --illum_limit 30  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/filter_load
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/filter_load/filter_load.py --illum_limit 15  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/filter_load
