@@ -48,6 +48,7 @@
 source /gscratch/astro/yoachim/lsst/loadLSST.bash
 setup sims_maf -t $USER 
 setup sims_maf_contrib -t $USER
+setup sims_featureScheduler -t $USER
 
 cd /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/maf
 
