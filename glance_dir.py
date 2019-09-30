@@ -22,12 +22,12 @@ if __name__ == "__main__":
         db_files = glob.glob('*.db')
     else:
         db_files = [args.db]
-    run_names = [name.replace('.db', '') for name in db_files]
+    run_names = [os.path.basename(name).replace('.db', '') for name in db_files]
 
-    for name in run_names:
+    for filename, name in zip(db_files, run_names):
         if os.path.isdir(name):
             shutil.rmtree(name)
-        opsdb = db.OpsimDatabaseV4(name+'.db')
+        opsdb = db.OpsimDatabaseV4(filename)
         colmap = batches.ColMapDict('OpsimV4')
 
         bdict = {}

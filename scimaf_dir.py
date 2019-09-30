@@ -4,17 +4,27 @@ import shutil
 import lsst.sims.maf.batches as batches
 import lsst.sims.maf.db as db
 import lsst.sims.maf.metricBundles as mb
-
+import argparse
+import os
 
 if __name__ == "__main__":
     """
     Run the science batch on all .db files in a directory.
     """
-    
-    db_files = glob.glob('*.db')
-    run_names = [name.replace('.db', '') for name in db_files]
-    for name in run_names:
-        opsdb = db.OpsimDatabaseV4(name+'.db')
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--db", type=str, default=None)
+    args = parser.parse_args()
+
+    if args.db is None:
+        if os.path.isfile('trackingDb_sqlite.db'):
+            os.remove('trackingDb_sqlite.db')
+        db_files = glob.glob('*.db')
+    else:
+        db_files = [args.db]
+    run_names = [os.path.basename(name).replace('.db', '') for name in db_files]
+
+    for filename, name in zip(db_files, run_names):
+        opsdb = db.OpsimDatabaseV4(filename)
         colmap = batches.ColMapDict('OpsimV4')
         if os.path.isdir('sci_' + name):
             shutil.rmtree('sci_' + name)
