@@ -40,6 +40,9 @@ Vary how long the u filter stays loaded around new moon.
 
 A variety of potential survey footprints
 
+## presto
+Taking pairs in widely separated filters, and testing observing a third observation.
+
 ## roll_alt
 
 An experiment where we combine rolling cadence with altSched. 
