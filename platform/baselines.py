@@ -197,8 +197,8 @@ if __name__ == "__main__":
         if mixedPairs:
             greedy = gen_greedy_surveys(nside, nexp=nexp)
             blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset)
-            #surveys = [ddfs, blobs, greedy]
-            surveys = [ddfs, greedy]
+            surveys = [ddfs, blobs, greedy]
+            #surveys = [ddfs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
                       nside=nside)
