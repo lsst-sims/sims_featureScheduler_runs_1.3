@@ -51,17 +51,29 @@ if __name__ == '__main__':
     scheduler.update_conditions(conditions)
 
     rewards = []
+    reward_sizes = []
     for survey_list in scheduler.survey_lists:
         rw = []
+        rws = []
         for survey in survey_list:
             reward = survey.calc_reward_function(conditions)
             if np.size(reward) > 1:
                 reward = reward[np.isfinite(reward)]
+                rws.append(np.size(reward))
                 if np.size(reward) > 0:
                     reward = np.sum(reward)
                 else:
                     reward = np.inf
             rw.append(reward)
         rewards.append(rw)
+        reward_sizes.append(rws)
 
     print(rewards)
+
+    print('')
+    print('reward sizes')
+    print(reward_sizes)
+    print('new obs')
+
+    obs = scheduler.request_observation()
+    print(obs)
