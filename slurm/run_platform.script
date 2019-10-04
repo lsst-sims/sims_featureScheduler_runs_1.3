@@ -1,1 +1,1 @@
-python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/platform/baselines.py  --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/platform
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/platform/baselines.py  --survey_length 1095 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/platform
