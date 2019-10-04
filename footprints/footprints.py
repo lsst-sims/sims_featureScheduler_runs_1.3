@@ -238,7 +238,7 @@ def newA(nside=32):
     XXX--this seems to have very strange u-band distributions
     """
     zeros = np.zeros(hp.nside2npix(nside), dtype=float)
-    footprints = new_regions(north_limit=2.25)
+    footprints = new_regions(north_limit=12.25)
 
     # Define how many visits per field we want
     obs_region = {'gp': 750, 'wfd': 839, 'nes': 255, 'scp': 200, 'gp_anti': 825, 'north': 138}
