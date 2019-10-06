@@ -343,12 +343,6 @@ def stuck_rolling(nside=32, scale_down_factor=0.2):
     return footprints
 
 
-def wfd_only(nside=32):
-    sg = standard_goals()
-    not_wfd = np.where(sg['r'] != 1.)
-    for key in sg:
-        sg[key][not_wfd] = 0
-    return sg
 
 
 
