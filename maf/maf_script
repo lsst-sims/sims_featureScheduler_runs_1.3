@@ -184,4 +184,5 @@ python ../glance_dir.py --db ../filter_load/filterload_illum3_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../filter_load/filterload_illum3_v1.3_10yrs.db
 python ../glance_dir.py --db ../presto/presto_third_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../presto/presto_third_v1.3_10yrs.db
-python ../glance_dir.py --db ../presto/presto_v1.3_10yrs.dbpython ../scimaf_dir.py --db ../presto/presto_v1.3_10yrs.db
+python ../glance_dir.py --db ../presto/presto_v1.3_10yrs.db
+python ../scimaf_dir.py --db ../presto/presto_v1.3_10yrs.db
