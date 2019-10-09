@@ -1,4 +1,6 @@
+./platform/baseline_v1.3_3yrs.db
 ./platform/baseline_v1.3_1yrs.db
+./platform/baseline_v1.3_10yrs.db
 ./baseline/baseline_2snap_v1.3_10yrs.db
 ./baseline/baseline_nomix_v1.3_10yrs.db
 ./baseline/baseline_v1.3_10yrs.db
@@ -53,10 +55,14 @@
 ./twilight_neo/twilight_neo_mod4_v1.3_10yrs.db
 ./twilight_neo/twilight_neo_mod3_v1.3_10yrs.db
 ./twilight_neo/twilight_neo_mod2_v1.3_10yrs.db
+./maf/trackingDb_sqlite.db
 ./alt_sched/altLike_large_v1.3_10yrs.db
 ./alt_sched/altLike_v1.3_10yrs.db
 ./roll_alt_dust/altroll_mod2_dust_sdf_0.20_v1.3_10yrs.db
 ./roll_alt_dust/altwfd_dust_v1.3_10yrs.db
+./wfd_only/wfd_only_v1.3_10yrs.db
+./wfd_only/wfd_only_2snap_v1.3_10yrs.db
+./wfd_only/wfd_only_nomix_v1.3_10yrs.db
 ./wfd_depth/wfd_standard_v1.3_10yrs.db
 ./wfd_depth/wfd_95_v1.3_10yrs.db
 ./wfd_depth/wfd_85_v1.3_10yrs.db

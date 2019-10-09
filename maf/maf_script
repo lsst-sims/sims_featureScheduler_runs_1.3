@@ -1,5 +1,9 @@
+python ../glance_dir.py --db ../platform/baseline_v1.3_3yrs.db
+python ../scimaf_dir.py --db ../platform/baseline_v1.3_3yrs.db
 python ../glance_dir.py --db ../platform/baseline_v1.3_1yrs.db
 python ../scimaf_dir.py --db ../platform/baseline_v1.3_1yrs.db
+python ../glance_dir.py --db ../platform/baseline_v1.3_10yrs.db
+python ../scimaf_dir.py --db ../platform/baseline_v1.3_10yrs.db
 python ../glance_dir.py --db ../baseline/baseline_2snap_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../baseline/baseline_2snap_v1.3_10yrs.db
 python ../glance_dir.py --db ../baseline/baseline_nomix_v1.3_10yrs.db
@@ -108,6 +112,8 @@ python ../glance_dir.py --db ../twilight_neo/twilight_neo_mod3_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../twilight_neo/twilight_neo_mod3_v1.3_10yrs.db
 python ../glance_dir.py --db ../twilight_neo/twilight_neo_mod2_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../twilight_neo/twilight_neo_mod2_v1.3_10yrs.db
+python ../glance_dir.py --db ../maf/trackingDb_sqlite.db
+python ../scimaf_dir.py --db ../maf/trackingDb_sqlite.db
 python ../glance_dir.py --db ../alt_sched/altLike_large_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../alt_sched/altLike_large_v1.3_10yrs.db
 python ../glance_dir.py --db ../alt_sched/altLike_v1.3_10yrs.db
@@ -116,6 +122,12 @@ python ../glance_dir.py --db ../roll_alt_dust/altroll_mod2_dust_sdf_0.20_v1.3_10
 python ../scimaf_dir.py --db ../roll_alt_dust/altroll_mod2_dust_sdf_0.20_v1.3_10yrs.db
 python ../glance_dir.py --db ../roll_alt_dust/altwfd_dust_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../roll_alt_dust/altwfd_dust_v1.3_10yrs.db
+python ../glance_dir.py --db ../wfd_only/wfd_only_v1.3_10yrs.db
+python ../scimaf_dir.py --db ../wfd_only/wfd_only_v1.3_10yrs.db
+python ../glance_dir.py --db ../wfd_only/wfd_only_2snap_v1.3_10yrs.db
+python ../scimaf_dir.py --db ../wfd_only/wfd_only_2snap_v1.3_10yrs.db
+python ../glance_dir.py --db ../wfd_only/wfd_only_nomix_v1.3_10yrs.db
+python ../scimaf_dir.py --db ../wfd_only/wfd_only_nomix_v1.3_10yrs.db
 python ../glance_dir.py --db ../wfd_depth/wfd_standard_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../wfd_depth/wfd_standard_v1.3_10yrs.db
 python ../glance_dir.py --db ../wfd_depth/wfd_95_v1.3_10yrs.db
@@ -172,5 +184,4 @@ python ../glance_dir.py --db ../filter_load/filterload_illum3_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../filter_load/filterload_illum3_v1.3_10yrs.db
 python ../glance_dir.py --db ../presto/presto_third_v1.3_10yrs.db
 python ../scimaf_dir.py --db ../presto/presto_third_v1.3_10yrs.db
-python ../glance_dir.py --db ../presto/presto_v1.3_10yrs.db
-python ../scimaf_dir.py --db ../presto/presto_v1.3_10yrs.db
+python ../glance_dir.py --db ../presto/presto_v1.3_10yrs.dbpython ../scimaf_dir.py --db ../presto/presto_v1.3_10yrs.db
