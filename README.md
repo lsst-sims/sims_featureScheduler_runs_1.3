@@ -12,9 +12,17 @@ Runs where deep drilling fields are executed as specified in the AGN DDF white p
 
 Experiments where some observations in u and g are intentionally taken at high airmass. We vary the number of high-airmass observations that are desired per year.
 
+## DDF_reward
+
+Experiment to try and get the deep drilling fields more balanced.
+
 ## DESC_DDF
 
 The deep drilling strategy presented in the DESC DDF white paper, varying how long the u filter is loaded. 
+
+## alt_detail
+
+Minor experiment to keep slews small especially in altitude.
 
 ## alt_sched
 
@@ -40,7 +48,20 @@ Vary how long the u filter stays loaded around new moon.
 
 A variety of potential survey footprints
 
+## maf
+
+No runs, just a place to put MAF results
+
+## notebooks
+
+No runs, just a place for quick notebooks looking at things
+
+## platform
+
+Directory for testing that the code is returning identical results cross-platform. 
+
 ## presto
+
 Taking pairs in widely separated filters, and testing observing a third observation.
 
 ## roll_alt
@@ -55,6 +76,10 @@ Same as roll_alt, but with the survey footprint set to avoid high extinction are
 
 A variety of rolling cadence strategies.
 
+## slurm
+
+No runs, just a place to put slurm scripts to run on cluster
+
 ## templates
 
 Testing how much weight to place on collecting full-footprint imaging in all filters every year.
@@ -66,3 +91,7 @@ Looking at executing a NEO survey in twilight time.
 ## wfd_depth
 
 Baseline-like surveys without any deep drilling fields, looking at what fraction of time needs to be given to the WFD area to still meet SRD requirements. 
+
+## wfd_only
+
+Running a footprint that is just the WFD area to test how much contingency the system has.
