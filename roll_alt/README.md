@@ -12,3 +12,7 @@ Have two things combined--use the delayed rolling and alternate north and south 
 
 One nice aspect of this type of rolling cadence is that the area of emphasis is always split north and south of the observatory, so fewer observatories would ever be shut out of following up alerts. In our usual rolling cadence experiments, the southern half of WFD can be the emphasis region, which would mean very few alerts for northern hemisphere telescopes to follow. Also, having the alerts concentrated in the south could overwhelm (even more than usual) the southern follow-up facilities.
 
+## alt_roll_w
+
+Same as alt_roll, but vary the weight on the footprint to try and get a smoother result in the end that meets SRD.
+
