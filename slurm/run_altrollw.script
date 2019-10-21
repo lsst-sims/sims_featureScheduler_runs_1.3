@@ -1,5 +1,6 @@
-python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 1 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 0.3 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 0.6 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
+python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 1.2 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 3 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 6 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
 python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 12 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt
-python /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt/alt_roll_w.py --footprint_weight 20 --outDir /gscratch/astro/yoachim/git_repos/sims_featureScheduler_runs_1.3/roll_alt

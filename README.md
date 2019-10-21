@@ -1,6 +1,8 @@
 # sims_featureScheduler_runs_1.3
 Scheduler simulations
 
+Completed runs can be found at:  https://lsst-web.ncsa.illinois.edu/sim-data/sims_featureScheduler_runs_1.3/
+
 
 # Run list
 

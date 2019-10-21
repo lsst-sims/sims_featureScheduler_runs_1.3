@@ -57,7 +57,7 @@ def gen_greedy_surveys(nside, nexp=1, target_maps=None, mod_year=None, day_offse
     return surveys
 
 
-def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=6.,
+def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None, template_weight=0.6,
                    target_maps=None, norm_factor=None, mod_year=2, max_season=10, day_offset=None,
                    footprint_weight=6.):
     target_map = standard_goals(nside=nside)
@@ -127,10 +127,10 @@ def generate_blobs(nside, mixed_pairs=False, nexp=1, no_pairs=False, offset=None
         bfs.append(bf.Time_to_twilight_basis_function(time_needed=time_needed))
         bfs.append(bf.Not_twilight_basis_function())
         bfs.append(bf.Planet_mask_basis_function(nside=nside))
-        weights = np.array([footprint_weight/2., footprint_weight/2., .3, .3, 3., 3., template_weight, template_weight, 3., 0., 0., 0., 0., 0., 0.])
+        weights = np.array([3., 3., footprint_weight/2., footprint_weight/2., 3., 3., template_weight, template_weight, 3., 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             # Need to scale weights up so filter balancing still works properly.
-            weights = np.array([footprint_weight, 0.6, 3., 3., template_weight*2, 3., 0., 0., 0., 0., 0., 0.])
+            weights = np.array([6., footprint_weight, 3., 3., template_weight*2, 3., 0., 0., 0., 0., 0., 0.])
         if filtername2 is None:
             survey_name = 'blob, %s' % filtername
         else:
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     parser.add_argument("--maxDither", type=float, default=0.7, help="Dither size for DDFs (deg)")
     parser.add_argument("--splits", type=int, default=2)
     parser.add_argument("--scale_down_factor", type=float, default=0.2)
-    parser.add_argument("--footprint_weight", type=float, default=6.)
+    parser.add_argument("--footprint_weight", type=float, default=0.6)
 
     args = parser.parse_args()
     nexp = args.nexp
