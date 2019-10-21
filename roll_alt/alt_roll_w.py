@@ -309,7 +309,8 @@ if __name__ == "__main__":
             greedy = gen_greedy_surveys(nside, nexp=nexp, target_maps=target_maps, mod_year=mod_year, day_offset=offset,
                                         norm_factor=norm_factor, max_season=max_season)
             blobs = generate_blobs(nside, nexp=nexp, mixed_pairs=True, offset=offset, target_maps=target_maps,
-                                   norm_factor=norm_factor, mod_year=mod_year, max_season=max_season, day_offset=offset)
+                                   norm_factor=norm_factor, mod_year=mod_year, max_season=max_season, day_offset=offset,
+                                   footprint_weight=footprint_weight)
             surveys = [ddfs, blobs, greedy]
             run_sched(surveys, survey_length=survey_length, verbose=verbose,
                       fileroot=os.path.join(outDir, fileroot+file_end), extra_info=extra_info,
