@@ -94,7 +94,7 @@ Testing how much weight to place on collecting full-footprint imaging in all fil
 
 ## twilight_neo
 
-Looking at executing a NEO survey in twilight time. 
+Looking at executing a NEO survey in twilight time. XXX--These simulations had a bug, please see the updated v1.4 simulations that have been corrected.
 
 ## wfd_depth
 
